@@ -1,2 +1,5 @@
 [phases.setup]
 runtime = "jdk21"
+
+[variables]
+NIXPACKS_JDK_VERSION = "21"
