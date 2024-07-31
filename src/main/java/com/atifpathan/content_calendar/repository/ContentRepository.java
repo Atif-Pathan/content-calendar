@@ -2,9 +2,11 @@ package com.atifpathan.content_calendar.repository;
 
 import com.atifpathan.content_calendar.model.Content;
 import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ContentRepository extends ListCrudRepository<Content,Integer> {
     List<Content> findAllByContentType(String type);
 }
