@@ -17,4 +17,5 @@ public class HomeController {
     public ContentCalendarProperties home() {
         return properties;
     }
+
 }

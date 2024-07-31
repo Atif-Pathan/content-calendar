@@ -13,59 +13,62 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/content")
-@CrossOrigin // for CORS, look into this ----------------------------------------------------------------->
+@CrossOrigin
+@RequestMapping("/api/content")
 public class ContentController {
 
     private final ContentRepository repository;
 
-    @Autowired
     public ContentController(ContentRepository repository) {
         this.repository = repository;
     }
 
-    @GetMapping(path = "")
+    @GetMapping
     public List<Content> findAll() {
         return repository.findAll();
     }
 
-    @GetMapping(path = "/{id}")
-    public Content findById(@PathVariable Integer id) {
-        return repository.findById(id)
-                         .orElseThrow(() ->
-                                 new ResponseStatusException(HttpStatus.NOT_FOUND,"Content Not Found"));
+    @GetMapping("/{id}")
+    public Optional<Content> findById(@PathVariable Integer id) {
+        return Optional.ofNullable(repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Content not found.")));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(path = "")
+    @PostMapping
     public void create(@Valid @RequestBody Content content) {
         repository.save(content);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping(path = "/{id}")
-    public void update(@RequestBody Content content, @PathVariable Integer id) {
-        if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Content not found!");
+    @PutMapping("/{id}")
+    public void update(@Valid @RequestBody Content content, @PathVariable Integer id) {
+        if(!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Content not found.");
         }
-//        Optional<Content> c = repository.findById(id);
-//        repository.deleteById(id);
+        repository.deleteById(id); //delete existing one and update
         repository.save(content);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
         repository.deleteById(id);
     }
 
-    @GetMapping(path = "/filter/{keyword}")
-    public List<Content> findByTitle(@PathVariable String keyword) {
-        return repository.findAllByTitleContains(keyword);
+    @GetMapping("/filter/type/{type}")
+    public List<Content> filterByType(@PathVariable String type) {
+        return repository.findAllByContentType(type.toUpperCase());
     }
+}
+
+//    @GetMapping(path = "/filter/{keyword}")
+//    public List<Content> findByTitle(@PathVariable String keyword) {
+//        return repository.findAllByTitleContains(keyword);
+//    }
 
 //    @GetMapping(path = "/filter/status/{status}")
 //    public List<Content> findByStatus(@PathVariable Status status) {
 //        return repository.listByStatus(status);
 //    }
-}
+
